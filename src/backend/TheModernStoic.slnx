@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="TheModernStoic.API/TheModernStoic.API.csproj" />
+  <Project Path="TheModernStoic.Application/TheModernStoic.Application.csproj" />
+  <Project Path="TheModernStoic.Domain/TheModernStoic.Domain.csproj" />
+  <Project Path="TheModernStoic.Infrastructure/TheModernStoic.Infrastructure.csproj" />
+  <Project Path="TheModernStoic.Tests/TheModernStoic.Tests.csproj" />
+</Solution>
