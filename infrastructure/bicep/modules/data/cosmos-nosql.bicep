@@ -94,6 +94,8 @@ resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/container
 
 // 5. OUTPUTS
 // Connection string format for NoSQL API
+@secure()
 output connectionString string = cosmosAccount.listConnectionStrings().connectionStrings[0].connectionString
 output endpoint string = cosmosAccount.properties.documentEndpoint
+@secure()
 output primaryKey string = cosmosAccount.listKeys().primaryMasterKey
