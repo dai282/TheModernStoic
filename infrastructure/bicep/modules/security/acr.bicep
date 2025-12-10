@@ -22,4 +22,5 @@ output loginServer string = acr.properties.loginServer
 // SECURITY NOTE: This retrieves the actual password.
 // We use 'secure string' so it doesn't show up in plain text in logs.
 @description('The admin password for the container registry.')
+@secure()
 output adminPassword string = acr.listCredentials().passwords[0].value //this is passed to main.bicep
