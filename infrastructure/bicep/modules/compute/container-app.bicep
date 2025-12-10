@@ -9,6 +9,9 @@ param cosmosConnectionString string
 @secure()
 param acrPassword string // We need to add this to main.bicep later!
 
+@description('The tag/version of the docker image to deploy')
+param imageTag string = 'latest'
+
 // 1. ENVIRONMENT (The Cluster)
 resource env 'Microsoft.App/managedEnvironments@2025-07-01' = {
   name: environmentName
@@ -33,7 +36,8 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
       //INGRESS: Allow traffic from the internet
       ingress: {
         external: true
-        targetPort: 80 // Hello world image uses port 80 (change to 8080 when using your .NET app)
+        //targetPort: 80 // Hello world image uses port 80 (change to 8080 when using your .NET app)
+        targetPort: 8080
         transport: 'auto'
       }
       // REGISTRIES: How to log in to ACR
@@ -65,7 +69,10 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
           name: 'main-app'
           // STARTER STRATEGY: Use a public Hello World image initially.
           // Your CI/CD pipeline will overwrite this with your real ACR image later.
-          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          //image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+
+          // Update the image reference to use the param
+          image: '${acrLoginServer}/modern-stoic-app:${imageTag}'
 
           // RESOURCE ALLOCATION:
           // Since you are running ONNX locally, we need more juice than the minimum.

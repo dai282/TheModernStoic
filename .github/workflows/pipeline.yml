@@ -1,0 +1,45 @@
+#Orchestrate the CI/CD pipeline for the project
+name: Build and Deploy
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  id-token: write # Required for OIDC login
+  contents: read
+
+env:
+  AZURE_RESOURCE_GROUP: rg-modernstoic-dev-ind # Update matches your Bicep
+  ACR_NAME: acrmodernstoicdevzu3qc # Update matches your actual ACR name
+  BACKEND_IMAGE_NAME: modern-stoic-app
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 1. Login to Azure using OIDC
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # 2. Login to ACR so Docker can push
+      - name: Login to ACR
+        run: az acr login --name ${{ env.ACR_NAME }}
+
+      # 3. Build and Push Docker Image
+      # We use the Git SHA as the unique tag for versioning
+      - name: Build and Push Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./src/backend
+          file: ./src/backend/TheModernStoic.API/Dockerfile
+          push: true
+          tags: ${{ env.ACR_NAME }}.azurecr.io/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
