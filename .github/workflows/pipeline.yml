@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  AZURE_RESOURCE_GROUP: rg-modernstoic-dev-ind # Update matches your Bicep
+  AZURE_RESOURCE_GROUP: rg-modern-stoic-dev-ind # Update matches your Bicep
   ACR_NAME: acrmodernstoicdevzu3qc # Update matches your actual ACR name
   BACKEND_IMAGE_NAME: modern-stoic-app
 
