@@ -43,3 +43,14 @@ jobs:
           file: ./src/backend/TheModernStoic.API/Dockerfile
           push: true
           tags: ${{ env.ACR_NAME }}.azurecr.io/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
+
+        # 4. Deploy Infrastructure (Bicep)
+      # We pass the github.sha as the imageTag param to Bicep
+      - name: Deploy Bicep
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
+          template: ./infrastructure/bicep/main.bicep
+          parameters: imageTag=${{ github.sha }} acrName=${{ env.ACR_NAME }}
+          failOnStdErr: false

@@ -9,8 +9,7 @@ param cosmosConnectionString string
 @secure()
 param acrPassword string // We need to add this to main.bicep later!
 
-@description('The tag/version of the docker image to deploy')
-param imageTag string = 'latest'
+param imageTag string
 
 // 1. ENVIRONMENT (The Cluster)
 resource env 'Microsoft.App/managedEnvironments@2025-07-01' = {

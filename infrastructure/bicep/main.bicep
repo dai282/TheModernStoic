@@ -13,6 +13,9 @@ param environmentName string = 'dev'
 @description('The name of the application.')
 param applicationName string = 'modern-stoic'
 
+@description('The tag/version of the docker image to deploy')
+param imageTag string = 'latest'
+
 //adminPassword parameter (not needed for NoSQL)
 // @secure()
 // @description('The administrator password for the Cosmos DB.')
@@ -64,5 +67,6 @@ module containerApp 'modules/compute/container-app.bicep' = {
     acrPassword: acr.outputs.adminPassword
     // DEPENDENCY: We pass the DB Connection string from Module 2 to here
     cosmosConnectionString: cosmos.outputs.connectionString
+    imageTag: imageTag
   }
 }
