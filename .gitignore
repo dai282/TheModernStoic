@@ -52,3 +52,28 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# Visual Studio Built-in caches
+.vs/
+.vstwo/
+
+# Azure functions / Container Apps / Local settings
+local.settings.json
+appsettings.Local.json
+.funcignore
+
+# GitHub Copilot
+.copilot/
+CopilotIndices/
+
+
