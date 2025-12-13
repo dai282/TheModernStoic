@@ -6,6 +6,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Resources\Meditations.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\model.onnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

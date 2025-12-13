@@ -1,14 +1,16 @@
 ﻿using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.SemanticKernel.Connectors.Onnx; // For AddBertOnnx... extension
 using TheModernStoic.Domain.Entities;
+using TheModernStoic.Domain.Interfaces;
+using TheModernStoic.Infrastructure.FileProcessing;
 
 // 1. Setup Paths
 var currentDir = Directory.GetCurrentDirectory();
 var resourcesDir = Path.Combine(currentDir, "Resources");
 var modelPath = Path.Combine(resourcesDir, "model.onnx");
 var vocabPath = Path.Combine(resourcesDir, "vocab.txt");
+var textPath = Path.Combine(resourcesDir, "Meditations.txt");
 
 // Validation
 if (!File.Exists(modelPath) || !File.Exists(vocabPath))
@@ -25,52 +27,87 @@ var builder = Host.CreateApplicationBuilder(args);
 // Register the ONNX Generator using the Extension Method
 builder.Services.AddBertOnnxEmbeddingGenerator(modelPath, vocabPath);
 
+// Register Services
 // Register a "Runner" service that contains our logic (keeps Program.cs clean)
-builder.Services.AddSingleton<SeederRunner>();
+//builder.Services.AddSingleton<SeederRunner>();
+
+// Cleaner and chunker
+builder.Services.AddSingleton<GutenbergCleaner>();
+builder.Services.AddSingleton<IContentProcessor, StoicTextChunker>();
 
 using var host = builder.Build();
 
-// 3. Execute
-var runner = host.Services.GetRequiredService<SeederRunner>();
-await runner.RunAsync();
 
+// Execution scope
+using var scope = host.Services.CreateScope();
+    //txt processor
+var processor = scope.ServiceProvider.GetRequiredService<IContentProcessor>();
+    //embedding generator
+var generator = scope.ServiceProvider.GetRequiredService<IEmbeddingGenerator<string, Embedding<float>>>();
 
-// --- Internal Runner Class (The "Brain" of the console app) ---
-class SeederRunner
+Console.WriteLine("Reading Meditations.txt...");
+
+var rawText = await File.ReadAllTextAsync(textPath);
+
+Console.WriteLine("Cleaning and chunking...");
+
+//chunks is IEnumerable<string>
+var chunks = processor.Process(rawText).ToList();
+
+Console.WriteLine($"Generated {chunks.Count} chunks. Beginning Embedding Generation...");
+
+// 3. Embedding Loop
+var knowledgeBase = new List<KnowledgeChunk>();
+
+// NOTE: In production, batch this. Don't do 1 by 1.
+// Since we are running local ONNX, we can batch reasonably well (e.g., 10 at a time).
+int batchSize = 10;
+
+for (int i = 0; i < chunks.Count; i+= batchSize)
 {
-    private readonly IEmbeddingGenerator<string, Embedding<float>> _generator;
+    //Skip(), Take() and ToList() is LINQ
+    //each iteration, you start at i, grab the next 10 items and turn them into a list 
+    var batch = chunks.Skip(i).Take(batchSize).ToList();
 
-    public SeederRunner(IEmbeddingGenerator<string, Embedding<float>> generator)
+    // Generate Embeddings for the batch
+    var embeddings = await generator.GenerateAsync(batch);
+
+    for (int j = 0; j < batch.Count; j++)
     {
-        _generator = generator;
-    }
-
-    public async Task RunAsync()
-    {
-        Console.WriteLine("Modern Stoic Seeder Initialized...");
-
-        var text = "The obstacle is the way.";
-        Console.WriteLine($"Generating vector for: '{text}'");
-
-        // Generate
-        var result = await _generator.GenerateAsync([text]);
-        var embedding = result[0];
-
-        // Output Verification
-        Console.WriteLine($"Success! Vector Length: {embedding.Vector.Length}");
-
-        // Peek at data
-        var values = embedding.Vector.ToArray();
-        Console.WriteLine($"First 3 values: [{values[0]:F4}, {values[1]:F4}, {values[2]:F4}]");
-
-        // Architecture check: Map to Domain Entity
-        var chunk = new KnowledgeChunk
+        knowledgeBase.Add(new KnowledgeChunk
         {
-            Content = text,
-            // Note: Cosmos DB Vector Search usually expects float[]
-            Vector = values
-        };
-
-        Console.WriteLine("Mapped to Domain Entity successfully.");
+            Id = Guid.NewGuid(),
+            Content = batch[j],
+            Source = "Meditations - Marcus Aurelius",
+            Vector = embeddings[j].Vector.ToArray() // Convert ReadOnlyMemory to float[]
+        });
     }
+
+    Console.Write($"\rProcessed {knowledgeBase.Count}/{chunks.Count} chunks...");
 }
+
+
+Console.WriteLine("\nDone! Embeddings stored in memory.");
+Console.WriteLine($"Sample Vector[0]: {knowledgeBase.First().Vector[0]}");
+
+
+//Alternative: using Chunk() for larger datasetes
+//var batches = chunks.Chunk(batchSize);
+
+//foreach (var batch in batches)
+//{
+//    var embeddings = await generator.GenerateAsync(batch);
+
+//    for (int j = 0; j < batch.Length; j++)
+//    {
+//        knowledgeBase.Add(new KnowledgeChunk
+//        {
+//            Id = Guid.NewGuid(),
+//            Content = batch[j],
+//            Source = "Meditations - Marcus Aurelius",
+//            Vector = embeddings[j].Vector.ToArray() // Convert ReadOnlyMemory to float[]
+//        });
+//    }
+
+//    Console.Write($"\rProcessed {knowledgeBase.Count}/{chunks.Count} chunks...");
+//}
