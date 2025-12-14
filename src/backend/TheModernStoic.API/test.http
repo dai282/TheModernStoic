@@ -1,1 +1,5 @@
 GET http://localhost:5289/
+
+GET http://localhost:5289/api/test/search?q=anxiety
+
+GET http://localhost:5289/debug/routes

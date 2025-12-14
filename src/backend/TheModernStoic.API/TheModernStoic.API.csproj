@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>0e0345e3-5835-4c4b-a48b-ee3ff92ead4b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +14,15 @@
   <ItemGroup>
     <ProjectReference Include="..\TheModernStoic.Application\TheModernStoic.Application.csproj" />
     <ProjectReference Include="..\TheModernStoic.Infrastructure\TheModernStoic.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+        <!-- This tells .NET: Go find the model in the Seeder folder, 
+       and copy it to the API's bin/Debug/net8.0/Models folder on build. -->
+    <Content Include="..\TheModernStoic.Seeder\Resources\**\*.*">
+      <Link>SeederFiles\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
