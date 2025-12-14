@@ -1,4 +1,7 @@
+using System.ClientModel;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.AI;
+using OpenAI;
 using TheModernStoic.Domain.Interfaces;
 using TheModernStoic.Infrastructure.Services;
 
@@ -40,13 +43,38 @@ builder.Services.AddSingleton<CosmosClient>(sp =>
 // Register the ONNX Generator using the Extension Method
 builder.Services.AddBertOnnxEmbeddingGenerator(modelPath, vocabPath);
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var hfApiKey = builder.Configuration["AI:HuggingFaceApiKey"];
+var hfModelId = builder.Configuration["HuggingFace:ModelId"];
+//var hfModelId = "meta-llama/Llama-3.1-8B-Instruct";
+
+if (string.IsNullOrEmpty(hfApiKey))
+    throw new InvalidOperationException("HugginFaceApiKey is missing in User Secrets.");
+
+builder.Services.AddChatClient(new OpenAIClient(
+    new ApiKeyCredential(hfApiKey),
+    new OpenAIClientOptions
+    {
+        Endpoint = new Uri($"https://router.huggingface.co/v1/")
+    }).GetChatClient(model: hfModelId).AsIChatClient());
+
 // Register the Search Service
 builder.Services.AddScoped<IVectorSearchService, CosmosVectorSearchService>();
+builder.Services.AddScoped<IJournalService, JournalService>();
 
 //Add controllers
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+// Enable Swagger Middleware ---
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(); // This creates the UI at /swagger
+}
 
 app.MapGet("/", () => "The Modern Stoic API is running!");
 
