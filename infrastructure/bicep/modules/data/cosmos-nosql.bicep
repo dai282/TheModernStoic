@@ -80,7 +80,7 @@ resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/container
           {
             path: '/embedding'
             dataType: 'float32'
-            dimensions: 1536 // OpenAI ada-002 dimension, adjust if needed
+            dimensions: 384 // Local ONNX embedding size
             distanceFunction: 'cosine'
           }
         ]
