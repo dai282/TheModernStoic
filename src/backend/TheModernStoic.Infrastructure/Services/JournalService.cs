@@ -83,16 +83,16 @@ public class JournalService : IJournalService
     }
 
         // Add the new method for History
-    public async Task<IEnumerable<JournalHistoryDto>> GetHistoryAsync()
+    public async Task<IEnumerable<JournalEntryDto>> GetHistoryAsync()
     {
         var entries = await _journalRepository.GetEntriesAsync("guest-user");
         // Map to DTO
-        return entries.Select(e => new JournalHistoryDto 
+        return entries.Select(e => new JournalEntryDto 
         { 
             Id = e.Id,
             Date = e.CreatedAt,
-            Snippet = e.UserText.Length > 50 ? e.UserText.Substring(0, 50) + "..." : e.UserText 
-            // Add other fields needed for UI
+            UserText = e.UserText,         
+            StoicResponse = e.StoicResponse
         });
     }
 

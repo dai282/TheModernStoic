@@ -6,5 +6,5 @@ public interface IJournalService
 {
     Task<JournalResponseDto> ProcessJournalEntryAsync(string userText);
 
-    Task<IEnumerable<JournalHistoryDto>> GetHistoryAsync();
+    Task<IEnumerable<JournalEntryDto>> GetHistoryAsync();
 }

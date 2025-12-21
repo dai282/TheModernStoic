@@ -15,9 +15,10 @@ public class JournalResponseDto
 }
 
 // OUTPUT: The list for the "History" page
-public class JournalHistoryDto
+public class JournalEntryDto
 {
     public string Id { get; set; }
     public DateTime Date { get; set; }
-    public string Snippet { get; set; } // First 50 chars for the card preview
+    public string UserText { get; set; }       // The Full User Input
+    public string StoicResponse { get; set; }  // The Full AI Advice
 }
