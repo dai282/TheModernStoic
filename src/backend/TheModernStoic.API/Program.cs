@@ -80,7 +80,7 @@ builder.Services.AddScoped<IJournalService, JournalService>();
 builder.Services.AddSingleton<IJournalRepository>(sp => 
 {
     var client = sp.GetRequiredService<CosmosClient>();
-    return new CosmosJournalRepository(client, "StoicDb", "Entries");
+    return new CosmosJournalRepository(client, "ModernStoicDb", "Entries");
 });
 
 //Add controllers
