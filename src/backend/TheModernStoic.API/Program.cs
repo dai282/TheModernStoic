@@ -3,6 +3,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.AI;
 using OpenAI;
 using TheModernStoic.Domain.Interfaces;
+using TheModernStoic.Infrastructure.Repositories;
 using TheModernStoic.Infrastructure.Services;
 
 var seederPath = Path.Combine(AppContext.BaseDirectory, "SeederFiles");
@@ -46,6 +47,17 @@ builder.Services.AddBertOnnxEmbeddingGenerator(modelPath, vocabPath);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Add CORS for React
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // The Vite default port
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var hfApiKey = builder.Configuration["AI:HuggingFaceApiKey"];
 var hfModelId = builder.Configuration["HuggingFace:ModelId"];
 //var hfModelId = "meta-llama/Llama-3.1-8B-Instruct";
@@ -64,6 +76,13 @@ builder.Services.AddChatClient(new OpenAIClient(
 builder.Services.AddScoped<IVectorSearchService, CosmosVectorSearchService>();
 builder.Services.AddScoped<IJournalService, JournalService>();
 
+// Register the new Repository
+builder.Services.AddSingleton<IJournalRepository>(sp => 
+{
+    var client = sp.GetRequiredService<CosmosClient>();
+    return new CosmosJournalRepository(client, "StoicDb", "Entries");
+});
+
 //Add controllers
 builder.Services.AddControllers();
 
@@ -77,6 +96,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("/", () => "The Modern Stoic API is running!");
+
+app.UseCors("ReactPolicy");
 
 app.MapControllers();
 

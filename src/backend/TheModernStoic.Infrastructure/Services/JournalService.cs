@@ -1,5 +1,7 @@
 using System.Text;
 using Microsoft.Extensions.AI;
+using TheModernStoic.Application.DTOs;
+using TheModernStoic.Domain.Entities;
 using TheModernStoic.Domain.Interfaces;
 
 namespace TheModernStoic.Infrastructure.Services;
@@ -10,16 +12,19 @@ public class JournalService : IJournalService
     private readonly IChatClient _chatClient;
     private readonly IEmbeddingGenerator<string, Embedding<float>> _embeddingGenerator;
     private readonly IVectorSearchService _vectorSearchService;
+    private readonly IJournalRepository _journalRepository;
 
     public JournalService(
         IChatClient chatClient,
         IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator,
-        IVectorSearchService vectorSearchService
+        IVectorSearchService vectorSearchService,
+        IJournalRepository journalRepository
     )
     {
         _chatClient = chatClient;
         _embeddingGenerator = embeddingGenerator;
         _vectorSearchService = vectorSearchService;
+        _journalRepository = journalRepository;
     }
 
     public async Task<JournalResponseDto> ProcessJournalEntryAsync(string userText)
@@ -56,7 +61,19 @@ public class JournalService : IJournalService
         // 3. Generate Advice (Remote API - HuggingFace)
         var chatResponse = await _chatClient.GetResponseAsync(messages);
 
-        //4. Return Result
+        //4. Create Journal Entry Entity (with user text, AI advice, date, etc.)
+        var entry = new JournalEntry
+        {
+            UserText = userText,
+            StoicResponse = chatResponse.Text,
+            CreatedAt = DateTime.UtcNow,
+            UserId = "guest-user" // Hardcoded for now, extracted from Context later
+        };
+
+        //5. Persist to Cosmos DB
+        await _journalRepository.AddEntryAsync(entry);
+
+        //6. Return Result
         return new JournalResponseDto
         {
             UserText = userText,
@@ -64,5 +81,21 @@ public class JournalService : IJournalService
             CitedQuotes = searchResults.Select(x => x.Content).ToList()
         };
     }
+
+        // Add the new method for History
+    public async Task<IEnumerable<JournalHistoryDto>> GetHistoryAsync()
+    {
+        var entries = await _journalRepository.GetEntriesAsync("guest-user");
+        // Map to DTO
+        return entries.Select(e => new JournalHistoryDto 
+        { 
+            Id = e.Id,
+            Date = e.CreatedAt,
+            Snippet = e.UserText.Length > 50 ? e.UserText.Substring(0, 50) + "..." : e.UserText 
+            // Add other fields needed for UI
+        });
+    }
+
+
 
 }

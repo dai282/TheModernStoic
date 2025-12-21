@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TheModernStoic.Application.DTOs;
 using TheModernStoic.Domain.Interfaces;
 using TheModernStoic.Infrastructure.Services;
 
@@ -26,7 +27,7 @@ public class TestController : ControllerBase
     }
 
     [HttpPost("advise")]
-    public async Task<IActionResult> GetResponse([FromBody] JournalEntryDto entry)
+    public async Task<IActionResult> GetResponse([FromBody] CreateJournalDto entry)
     {
         if (string.IsNullOrWhiteSpace(entry.Text))
             return BadRequest("Journal entry cannot be empty.");
