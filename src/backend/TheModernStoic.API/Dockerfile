@@ -11,7 +11,8 @@ COPY ["TheModernStoic.Infrastructure/TheModernStoic.Infrastructure.csproj", "The
 COPY ["TheModernStoic.Tests/TheModernStoic.Tests.csproj", "TheModernStoic.Tests/"]
 
 # Restore dependencies
-RUN dotnet restore "TheModernStoic.slnx"
+#RUN dotnet restore "TheModernStoic.slnx"
+RUN dotnet restore "TheModernStoic.API/TheModernStoic.API.csproj"
 
 # Copy the rest of the source code
 COPY . .
