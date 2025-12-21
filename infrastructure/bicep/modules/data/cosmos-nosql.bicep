@@ -36,10 +36,10 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2025-10-15' = {
 // 3. RESOURCE: Database
 resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2025-10-15' = {
   parent: cosmosAccount
-  name: 'ModernStoicDB'
+  name: 'ModernStoicDb'
   properties: {
     resource: {
-      id: 'ModernStoicDB'
+      id: 'ModernStoicDb'
     }
   }
 }
