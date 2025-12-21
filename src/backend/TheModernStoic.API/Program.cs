@@ -92,7 +92,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(); // This creates the UI at /swagger
+    app.UseSwaggerUI(); // This creates the UI at /swagger/
 }
 
 app.MapGet("/", () => "The Modern Stoic API is running!");
