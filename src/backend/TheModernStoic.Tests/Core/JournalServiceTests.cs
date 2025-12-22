@@ -46,7 +46,8 @@ namespace TheModernStoic.Tests.Core
 
             //2. Setup chat client to return a specific advice
             // Note: Microsoft.Extensions.AI uses ChatCompletion as the return type
-            var chatResponse = new ChatResponse(new Microsoft.Extensions.AI.ChatMessage(ChatRole.Assistant,fakeAdvice));
+            var chatResponse = new ChatResponse(new Microsoft.Extensions.AI.ChatMessage(
+                ChatRole.Assistant,fakeAdvice));
 
             _chatMock.GetResponseAsync(
                 Arg.Any<IEnumerable<Microsoft.Extensions.AI.ChatMessage>>(),
@@ -82,10 +83,12 @@ namespace TheModernStoic.Tests.Core
         {
             // ARRANGE
             string userText = "Testing persistence.";
-            var chatResponse = new ChatResponse(new Microsoft.Extensions.AI.ChatMessage(ChatRole.Assistant, "Saved."));
+            var chatResponse = new ChatResponse(new Microsoft.Extensions.AI.ChatMessage(
+                ChatRole.Assistant, "Saved."));
 
             _vectorSearchMock.SearchAsync(Arg.Any<string>()).Returns(new List<SearchResult>());
-            _chatMock.GetResponseAsync(Arg.Any<IEnumerable<Microsoft.Extensions.AI.ChatMessage>>(), null, default).Returns(chatResponse);
+            _chatMock.GetResponseAsync(Arg.Any<IEnumerable<Microsoft.Extensions.AI.ChatMessage>>(), 
+                                        null, default).Returns(chatResponse);
 
             // ACT
             await _sut.ProcessJournalEntryAsync(userText);
