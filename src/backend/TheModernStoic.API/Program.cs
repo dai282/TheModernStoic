@@ -18,6 +18,8 @@ if (!File.Exists(modelPath))
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.AddSingleton<CosmosClient>(sp =>
 {
     var connString = builder.Configuration["CosmosDb:ConnectionString"];
@@ -87,6 +89,8 @@ builder.Services.AddSingleton<IJournalRepository>(sp =>
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 // Enable Swagger Middleware ---
 if (app.Environment.IsDevelopment())

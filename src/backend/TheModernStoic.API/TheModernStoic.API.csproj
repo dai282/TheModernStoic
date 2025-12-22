@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TheModernStoic.Application\TheModernStoic.Application.csproj" />
     <ProjectReference Include="..\TheModernStoic.Infrastructure\TheModernStoic.Infrastructure.csproj" />
+    <ProjectReference Include="..\TheModernStoic.ServiceDefaults\TheModernStoic.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>
