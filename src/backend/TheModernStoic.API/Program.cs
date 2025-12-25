@@ -54,7 +54,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") // The Vite default port
+        policy.WithOrigins("http://localhost:5173",
+         "https://blue-ocean-065454300.6.azurestaticapps.net") // The Vite default port
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -79,7 +80,7 @@ builder.Services.AddScoped<IVectorSearchService, CosmosVectorSearchService>();
 builder.Services.AddScoped<IJournalService, JournalService>();
 
 // Register the new Repository
-builder.Services.AddSingleton<IJournalRepository>(sp => 
+builder.Services.AddSingleton<IJournalRepository>(sp =>
 {
     var client = sp.GetRequiredService<CosmosClient>();
     return new CosmosJournalRepository(client, "ModernStoicDb", "Entries");

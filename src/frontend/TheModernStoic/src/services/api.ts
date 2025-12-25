@@ -1,8 +1,7 @@
 import type { JournalEntry, JournalResponse } from "../types/journal";
 import axios from "axios";
 
-// TODO: In production, this comes from import.meta.env.VITE_API_URL
-// For now, copy the HTTPS URL from your Aspire Dashboard (e.g., https://localhost:7231)
+//VITE_API_BASE_URL is added to the Static web apps environment variables in azure portal
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5289/api";
 
 export const journalService = {
