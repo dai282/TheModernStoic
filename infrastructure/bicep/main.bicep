@@ -16,6 +16,10 @@ param applicationName string = 'modern-stoic'
 @description('The tag/version of the docker image to deploy')
 param imageTag string = 'latest'
 
+@secure()
+@description('The API Key for Hugging Face Inference')
+param huggingFaceApiKey string // <--- NEW PARAMETER
+
 //adminPassword parameter (not needed for NoSQL)
 // @secure()
 // @description('The administrator password for the Cosmos DB.')
@@ -68,5 +72,6 @@ module containerApp 'modules/compute/container-app.bicep' = {
     // DEPENDENCY: We pass the DB Connection string from Module 2 to here
     cosmosConnectionString: cosmos.outputs.connectionString
     imageTag: imageTag
+    huggingFaceApiKey: huggingFaceApiKey // <--- PASS IT DOWN
   }
 }

@@ -52,5 +52,5 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
           template: ./infrastructure/bicep/main.bicep
-          parameters: imageTag=${{ github.sha }}
+          parameters: imageTag=${{ github.sha }} huggingFaceApiKey=${{ secrets.HUGGINGFACE_API_KEY }}
           failOnStdErr: false

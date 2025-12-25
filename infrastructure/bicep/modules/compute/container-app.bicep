@@ -8,6 +8,8 @@ param acrName string
 param cosmosConnectionString string
 @secure()
 param acrPassword string // We need to add this to main.bicep later!
+@secure()
+param huggingFaceApiKey string // <--- NEW PARAMETER
 
 param imageTag string
 
@@ -59,6 +61,10 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
           name: 'cosmos-connection-string'
           value: cosmosConnectionString
         }
+        {
+          name: 'hf-api-key' // Internal secret name
+          value: huggingFaceApiKey
+        }
       ]
     }
     template: {
@@ -84,8 +90,18 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
           // ENVIRONMENT VARIABLES: Injecting secrets into the .NET App
           env: [
             {
-              name: 'ConnectionStrings__CosmosDb' // Matches .NET appsettings structure // Still works for NoSQL API
+              name: 'ConnectionStrings__CosmosDb'
               secretRef: 'cosmos-connection-string'
+            }
+            {
+              // Maps to builder.Configuration["AI:HuggingFaceApiKey"]
+              name: 'AI__HuggingFaceApiKey' 
+              secretRef: 'hf-api-key'
+            }
+            {
+              // Hardcode or add param for ModelId if needed
+              name: 'HuggingFace__ModelId'
+              value: 'mistralai/Mistral-7B-Instruct-v0.3' 
             }
             {
               name: 'ASPNETCORE_ENVIRONMENT'
