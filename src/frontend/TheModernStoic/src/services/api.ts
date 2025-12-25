@@ -3,7 +3,7 @@ import axios from "axios";
 
 // TODO: In production, this comes from import.meta.env.VITE_API_URL
 // For now, copy the HTTPS URL from your Aspire Dashboard (e.g., https://localhost:7231)
-const API_BASE = "http://localhost:5289/api";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5289/api";
 
 export const journalService = {
   async submitUserEntry(userText: string): Promise<JournalResponse> {
