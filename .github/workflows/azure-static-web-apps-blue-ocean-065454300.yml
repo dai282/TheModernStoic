@@ -45,7 +45,7 @@ jobs:
           output_location: "dist" # Built app content directory - optional
           github_id_token: ${{ steps.idtoken.outputs.result }}
         env:
-          VITE_API_BASE_URL: "https://app-modern-stoic-dev-zu3qc.greenwave-cda47c48.centralindia.azurecontainerapps.io"
+          VITE_API_BASE_URL: "https://app-modern-stoic-dev-zu3qc.greenwave-cda47c48.centralindia.azurecontainerapps.io/api"
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
