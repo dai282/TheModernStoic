@@ -82,7 +82,7 @@ public class JournalService : IJournalService
         };
     }
 
-        // Add the new method for History
+    // Add the new method for History
     public async Task<IEnumerable<JournalEntryDto>> GetHistoryAsync()
     {
         var entries = await _journalRepository.GetEntriesAsync("guest-user");
@@ -95,7 +95,5 @@ public class JournalService : IJournalService
             StoicResponse = e.StoicResponse
         });
     }
-
-
 
 }

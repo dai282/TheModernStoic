@@ -1,8 +1,10 @@
 <Solution>
   <Project Path="TheModernStoic.API/TheModernStoic.API.csproj" />
+  <Project Path="TheModernStoic.AppHost/TheModernStoic.AppHost.csproj" Id="df1a2744-d182-41a5-90d1-761ccd7820cc" />
   <Project Path="TheModernStoic.Application/TheModernStoic.Application.csproj" />
   <Project Path="TheModernStoic.Domain/TheModernStoic.Domain.csproj" />
   <Project Path="TheModernStoic.Infrastructure/TheModernStoic.Infrastructure.csproj" />
   <Project Path="TheModernStoic.Seeder/TheModernStoic.Seeder.csproj" />
+  <Project Path="TheModernStoic.ServiceDefaults/TheModernStoic.ServiceDefaults.csproj" />
   <Project Path="TheModernStoic.Tests/TheModernStoic.Tests.csproj" />
 </Solution>
