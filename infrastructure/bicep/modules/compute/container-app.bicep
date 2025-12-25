@@ -101,7 +101,7 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
             {
               // Hardcode or add param for ModelId if needed
               name: 'HuggingFace__ModelId'
-              value: 'mistralai/Mistral-7B-Instruct-v0.3' 
+              value: 'meta-llama/Llama-3.1-8B-Instruct' 
             }
             {
               name: 'ASPNETCORE_ENVIRONMENT'
