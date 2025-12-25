@@ -9,7 +9,7 @@ using TheModernStoic.Infrastructure.Services;
 // var seederPath = Path.Combine(AppContext.BaseDirectory, "SeederFiles");
 // var modelPath = Path.Combine(seederPath, "model.onnx");
 // var vocabPath = Path.Combine(seederPath, "vocab.txt");
-var resourcesPath = Path.Combine(AppContext.BaseDirectory, "Resources"); 
+var resourcesPath = Path.Combine(AppContext.BaseDirectory, "Resources");
 var modelPath = Path.Combine(resourcesPath, "model.onnx");
 var vocabPath = Path.Combine(resourcesPath, "vocab.txt");
 
@@ -25,7 +25,8 @@ builder.AddServiceDefaults();
 
 builder.Services.AddSingleton<CosmosClient>(sp =>
 {
-    var connString = builder.Configuration["CosmosDb:ConnectionString"];
+    //var connString = builder.Configuration["CosmosDb:ConnectionString"];
+    var connString = builder.Configuration.GetConnectionString("CosmosDb");
     if (string.IsNullOrEmpty(connString))
         throw new InvalidOperationException("CosmosDb:ConnectionString is missing in User Secrets.");
 
