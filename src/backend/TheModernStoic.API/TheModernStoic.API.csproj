@@ -21,8 +21,13 @@
   <ItemGroup>
         <!-- This tells .NET: Go find the model in the Seeder folder, 
        and copy it to the API's bin/Debug/net8.0/Models folder on build. -->
+       <!--
     <Content Include="..\TheModernStoic.Seeder\Resources\**\*.*">
       <Link>SeederFiles\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>-->
+
+    <Content Include="Resources\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

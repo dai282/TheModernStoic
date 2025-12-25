@@ -6,9 +6,12 @@ using TheModernStoic.Domain.Interfaces;
 using TheModernStoic.Infrastructure.Repositories;
 using TheModernStoic.Infrastructure.Services;
 
-var seederPath = Path.Combine(AppContext.BaseDirectory, "SeederFiles");
-var modelPath = Path.Combine(seederPath, "model.onnx");
-var vocabPath = Path.Combine(seederPath, "vocab.txt");
+// var seederPath = Path.Combine(AppContext.BaseDirectory, "SeederFiles");
+// var modelPath = Path.Combine(seederPath, "model.onnx");
+// var vocabPath = Path.Combine(seederPath, "vocab.txt");
+var resourcesPath = Path.Combine(AppContext.BaseDirectory, "Resources"); 
+var modelPath = Path.Combine(resourcesPath, "model.onnx");
+var vocabPath = Path.Combine(resourcesPath, "vocab.txt");
 
 // Verify existence (Good practice for debugging deployment issues)
 if (!File.Exists(modelPath))

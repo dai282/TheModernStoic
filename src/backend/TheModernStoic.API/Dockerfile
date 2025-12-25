@@ -26,8 +26,5 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 EXPOSE 8080
 
-# Create a directory for the ONNX models (Architectural prep for Day 3-4)
-RUN mkdir -p /app/models
-
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "TheModernStoic.API.dll"]
