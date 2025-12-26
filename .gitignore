@@ -76,4 +76,5 @@ appsettings.Local.json
 .copilot/
 CopilotIndices/
 
-
+# Environment files
+.env

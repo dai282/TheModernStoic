@@ -9,9 +9,12 @@ param cosmosConnectionString string
 @secure()
 param acrPassword string // We need to add this to main.bicep later!
 @secure()
-param huggingFaceApiKey string // <--- NEW PARAMETER
-
+param huggingFaceApiKey string
 param imageTag string
+@secure()
+param auth0Domain string
+@secure()
+param auth0Audience string
 
 // 1. ENVIRONMENT (The Cluster)
 resource env 'Microsoft.App/managedEnvironments@2025-07-01' = {
@@ -65,6 +68,14 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
           name: 'hf-api-key' // Internal secret name
           value: huggingFaceApiKey
         }
+        {
+          name: 'auth0-domain'
+          value: auth0Domain
+        }
+        {
+          name: 'auth0-audience'
+          value: auth0Audience
+        }
       ]
     }
     template: {
@@ -106,6 +117,14 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
             {
               name: 'ASPNETCORE_ENVIRONMENT'
               value: 'Development'
+            }
+            {
+              name: 'Auth0__Domain'
+              secretRef: 'auth0-domain'
+            }
+            {
+              name: 'Auth0__Audience'
+              secretRef: 'auth0-audience'
             }
           ]
         }
