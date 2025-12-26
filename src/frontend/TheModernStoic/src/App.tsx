@@ -7,7 +7,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { LoginButton, LogoutButton } from "./components/Auth";
 
 function App() {
-  const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth0();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth0();
   const { entries, loading, error, submitEntry } = useJournal();
 
   const [activeTab, setActiveTab] = useState<"journal" | "history">("journal");
