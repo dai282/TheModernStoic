@@ -17,8 +17,15 @@ public class CurrentUserService : ICurrentUserService
     {
         get
         {
-            var id = _httpContextAccessor.HttpContext?.User?
-                .FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            var id = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // 2. Fallback: Try Auth0 specific "sub" claim
+            if (string.IsNullOrEmpty(id))
+            {
+                id = user?.FindFirst("sub")?.Value;
+            }
 
             return id ?? throw new UnauthorizedAccessException("User is not authenticated.");
         }

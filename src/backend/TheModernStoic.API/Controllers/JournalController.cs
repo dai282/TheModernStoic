@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TheModernStoic.Application.DTOs;
 using TheModernStoic.Domain.Interfaces;
@@ -6,6 +7,7 @@ namespace TheModernStoic.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class JournalController : ControllerBase
 {
     private readonly IJournalService _journalService;

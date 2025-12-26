@@ -23,7 +23,7 @@ function App() {
   // View 1: Not Authenticated (Landing Page)
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-stoic-paper text-stoic-ink p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-stoic-paper text-stoic-ink p-4 animate-fade-in">
         <h1 className="text-5xl font-serif italic mb-4">The Modern Stoic</h1>
         <p className="mb-8 text-stoic-charcoal">
           "The soul becomes dyed with the color of its thoughts."
@@ -33,7 +33,7 @@ function App() {
     );
   }
 
-  // View 2: Authentiocated App
+  // View 2: Authenticated App
   return (
     <div className="min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 bg-stoic-paper text-stoic-ink font-sans antialiased">
       {/* Header */}
@@ -45,7 +45,7 @@ function App() {
           Dialogue with Marcus Aurelius
         </p>
         <div className="absolute right-0 top-0">
-            <LogoutButton />
+          <LogoutButton />
         </div>
       </header>
 

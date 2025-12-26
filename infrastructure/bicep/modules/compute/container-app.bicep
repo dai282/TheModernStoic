@@ -11,7 +11,9 @@ param acrPassword string // We need to add this to main.bicep later!
 @secure()
 param huggingFaceApiKey string
 param imageTag string
+@secure()
 param auth0Domain string
+@secure()
 param auth0Audience string
 
 // 1. ENVIRONMENT (The Cluster)
