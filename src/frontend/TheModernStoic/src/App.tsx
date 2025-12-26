@@ -7,7 +7,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { LoginButton, LogoutButton } from "./components/Auth";
 
 function App() {
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuth0();
+  const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth0();
   const { entries, loading, error, submitEntry } = useJournal();
 
   const [activeTab, setActiveTab] = useState<"journal" | "history">("journal");
@@ -44,7 +44,7 @@ function App() {
         <p className="text-stoic-charcoal font-light text-lg">
           Dialogue with Marcus Aurelius
         </p>
-        <div className="absolute right-0 top-0">
+        <div >
           <LogoutButton />
         </div>
       </header>
@@ -89,7 +89,7 @@ function App() {
       </main>
 
       <footer className="mt-20 text-stoic-sand text-xs font-sans text-center">
-        Memento Mori • {new Date().getFullYear()}
+        Memento Mori • {new Date().getFullYear()} • {user?.email}
       </footer>
     </div>
   );
