@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.AI;
 using NSubstitute;
 using OpenAI.Chat;
+using TheModernStoic.Application.Interfaces;
 using TheModernStoic.Domain.Entities;
 using TheModernStoic.Domain.Interfaces;
 using TheModernStoic.Domain.ValueObjects;
@@ -13,8 +14,9 @@ namespace TheModernStoic.Tests.Core
     {
         private readonly IJournalRepository _repoMock; //Mock Database
         private readonly IChatClient _chatMock; //Mock AI
-        private readonly IEmbeddingGenerator<string, Embedding<float>> _embeddingMock; //Mock ONNX
         private readonly IVectorSearchService _vectorSearchMock;
+
+        private readonly ICurrentUserService _currentUserServiceMock;
 
         private readonly JournalService _sut; //System Under Test
 
@@ -22,11 +24,11 @@ namespace TheModernStoic.Tests.Core
         {
             _repoMock = Substitute.For<IJournalRepository>();
             _chatMock = Substitute.For<IChatClient>();
-            _embeddingMock = Substitute.For<IEmbeddingGenerator<string, Embedding<float>>>();
             _vectorSearchMock = Substitute.For<IVectorSearchService>();
+            _currentUserServiceMock = Substitute.For<ICurrentUserService>();
 
             //setup SUT with mocks
-            _sut = new JournalService( _chatMock, _embeddingMock, _vectorSearchMock, _repoMock);
+            _sut = new JournalService( _chatMock, _vectorSearchMock, _repoMock, _currentUserServiceMock);
         }
 
         [Fact]

@@ -1,7 +1,10 @@
 using System.ClientModel;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.AI;
 using OpenAI;
+using TheModernStoic.API.Services;
+using TheModernStoic.Application.Interfaces;
 using TheModernStoic.Domain.Interfaces;
 using TheModernStoic.Infrastructure.Repositories;
 using TheModernStoic.Infrastructure.Services;
@@ -20,6 +23,27 @@ if (!File.Exists(modelPath))
 }
 
 var builder = WebApplication.CreateBuilder(args);
+
+//AUTHENTICATION SETUP
+    //Configuration
+var authDomain = builder.Configuration["Auth0:Domain"];
+var authAudience = builder.Configuration["Auth0:Audience"];
+
+    //Add Authentication Services
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.Authority = authDomain;
+    options.Audience = authAudience;
+});
+
+    //Register CurrentUserService
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder.AddServiceDefaults();
 
@@ -106,7 +130,10 @@ if (app.Environment.IsDevelopment())
 
 app.MapGet("/", () => "The Modern Stoic API is running!");
 
+//Middleware setup
 app.UseCors("ReactPolicy");
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

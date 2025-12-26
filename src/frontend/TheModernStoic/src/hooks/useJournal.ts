@@ -1,11 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
-import { journalService } from "../services/api";
 import type { JournalEntry, JournalResponse } from "../types/journal";
+import { useStoicApi } from "./useStoicApi";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export const useJournal = () =>{
     const [entries, setEntries] = useState<JournalEntry[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const { isAuthenticated } = useAuth0();
+
+    const {submitUserEntry, getHistory} = useStoicApi();
 
     /* useCallback accepts as a first parameter a function and returns a memoized version of it 
     (in terms of its memory location, not the computation done inside). 
@@ -17,7 +22,7 @@ export const useJournal = () =>{
     //TLDR: fetches history from backend and sets entries state
     const fetchHistory = useCallback(async () =>{
         try { 
-            const data = await journalService.getHistory();
+            const data = await getHistory();
             setEntries(data);
         }
         catch(err){
@@ -28,8 +33,10 @@ export const useJournal = () =>{
 
     //fetches history on mount
     useEffect(() => {
-        fetchHistory();
-    }, [fetchHistory]);
+        if (isAuthenticated){
+            fetchHistory();
+        }
+    }, [fetchHistory, isAuthenticated]);
 
     //submit new entry
     const submitEntry = async (text: string): Promise<JournalResponse | null> =>{
@@ -37,7 +44,7 @@ export const useJournal = () =>{
         setError(null);
 
         try{
-            const response = await journalService.submitUserEntry(text);
+            const response = await submitUserEntry(text);
             // Optimistic update or refetch? Let's refetch to be safe for now.
             await fetchHistory(); 
             return response;

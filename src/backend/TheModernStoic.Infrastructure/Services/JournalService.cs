@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.Extensions.AI;
 using TheModernStoic.Application.DTOs;
+using TheModernStoic.Application.Interfaces;
 using TheModernStoic.Domain.Entities;
 using TheModernStoic.Domain.Interfaces;
 
@@ -10,25 +11,28 @@ namespace TheModernStoic.Infrastructure.Services;
 public class JournalService : IJournalService
 {
     private readonly IChatClient _chatClient;
-    private readonly IEmbeddingGenerator<string, Embedding<float>> _embeddingGenerator;
     private readonly IVectorSearchService _vectorSearchService;
     private readonly IJournalRepository _journalRepository;
+    private readonly ICurrentUserService _currentUserService;
 
     public JournalService(
         IChatClient chatClient,
-        IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator,
         IVectorSearchService vectorSearchService,
-        IJournalRepository journalRepository
+        IJournalRepository journalRepository,
+        ICurrentUserService currentUserService
     )
     {
         _chatClient = chatClient;
-        _embeddingGenerator = embeddingGenerator;
         _vectorSearchService = vectorSearchService;
         _journalRepository = journalRepository;
+        _currentUserService = currentUserService;
     }
 
     public async Task<JournalResponseDto> ProcessJournalEntryAsync(string userText)
     {
+        // 0. Get Current User (Throws if not logged in)
+        var userId = _currentUserService.UserId;
+
         //1. Return search results (Cosmos Vector Search Service already does the embedding for us)
         var searchResults = await _vectorSearchService.SearchAsync(userText);
 
@@ -52,7 +56,7 @@ public class JournalService : IJournalService
                     "If the context matches well, quote it directly in your response."
             ),
 
-            new (ChatRole.User, 
+            new (ChatRole.User,
                 $"Here is the context from your writings:\n{retrievedContext}\n\n" +
                     $"User Journal Entry: \"{userText}\""
             )
@@ -67,7 +71,7 @@ public class JournalService : IJournalService
             UserText = userText,
             StoicResponse = chatResponse.Text,
             CreatedAt = DateTime.UtcNow,
-            UserId = "guest-user" // Hardcoded for now, extracted from Context later
+            UserId = userId
         };
 
         //5. Persist to Cosmos DB
@@ -85,13 +89,14 @@ public class JournalService : IJournalService
     // Add the new method for History
     public async Task<IEnumerable<JournalEntryDto>> GetHistoryAsync()
     {
-        var entries = await _journalRepository.GetEntriesAsync("guest-user");
+        var userId = _currentUserService.UserId;
+        var entries = await _journalRepository.GetEntriesAsync(userId);
         // Map to DTO
-        return entries.Select(e => new JournalEntryDto 
-        { 
+        return entries.Select(e => new JournalEntryDto
+        {
             Id = e.Id,
             Date = e.CreatedAt,
-            UserText = e.UserText,         
+            UserText = e.UserText,
             StoicResponse = e.StoicResponse
         });
     }
