@@ -42,7 +42,7 @@ jobs:
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "./src/frontend/TheModernStoic" # App source code path
           api_location: "" # Api source code path - optional
-          output_location: "dist" # Built app content directory - optional
+          output_location: "src/frontend/TheModernStoic/dist" # Built app content directory - optional
           github_id_token: ${{ steps.idtoken.outputs.result }}
         env:
           VITE_API_BASE_URL: "https://app-modern-stoic-dev-zu3qc.greenwave-cda47c48.centralindia.azurecontainerapps.io/api"
