@@ -25,11 +25,11 @@ if (!File.Exists(modelPath))
 var builder = WebApplication.CreateBuilder(args);
 
 //AUTHENTICATION SETUP
-    //Configuration
+//Configuration
 var authDomain = builder.Configuration["Auth0:Domain"];
 var authAudience = builder.Configuration["Auth0:Audience"];
 
-    //Add Authentication Services
+//Add Authentication Services
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -41,7 +41,7 @@ builder.Services.AddAuthentication(options =>
     options.Audience = authAudience;
 });
 
-    //Register CurrentUserService
+//Register CurrentUserService
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
@@ -83,7 +83,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("ReactPolicy", policy =>
     {
         policy.WithOrigins("http://localhost:5173",
-         "https://blue-ocean-065454300.6.azurestaticapps.net") // The Vite default port
+         "https://blue-ocean-065454300.6.azurestaticapps.net",
+         "https://blue-ocean-065454300-5.eastasia.6.azurestaticapps.net/") //preview environment test
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
