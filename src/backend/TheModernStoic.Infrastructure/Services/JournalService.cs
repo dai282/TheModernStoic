@@ -48,6 +48,7 @@ public class JournalService : IJournalService
         //2. Contruct the prompt
         // var messages = new List<ChatMessage>
         // {
+        //ORIGINAL
         //     new (ChatRole.System,
         //         "You are Marcus Aurelius, Roman Emperor and Stoic philosopher. " +
         //             "Analyze the user's journal entry. " +
@@ -65,14 +66,51 @@ public class JournalService : IJournalService
         //Quote response only
         var messages = new List<ChatMessage>
         {
+            //ONLY THE QUOTE
+            // new (ChatRole.System,
+            //     "You are an expert on Stoic philosophy. " +
+            //     "Your task is to review the provided 'Context' (excerpts from Meditations) and the 'User Journal Entry'. " +
+            //     "Select the single most relevant excerpt from the context that offers the best advice for the user's situation. " +
+            //     "Output **only** the verbatim text of that selected quote, and wrap it in double quotes. " +
+            //     "If the quote starts from the middle of a sentence, add leading triple dots \"...\" " +
+            //     "Do not include introductory text, explanations, or markdown. " +
+            //     "Do not invent new quotes; strictly use what is provided in the context."
+            // ),
+
+            //WORD COUNT LIMITED
+            // new (ChatRole.System,
+            //     "You are Marcus Aurelius, Roman Emperor and Stoic philosopher. " +
+            //     "Read the user's journal entry and the provided context from 'Meditations'. " +
+            //     "Offer one specific piece of stoic advice. " +
+                
+            //     // STRICT CONSTRAINTS
+            //     "Keep your response extremely concise (under 75 words). " +
+            //     "Do not summarize the user's entry. " + 
+            //     "Go straight to the lesson. " +
+                
+            //     // TONE
+            //     "Be empathetic but firm. " +
+            //     "Include a direct quote from the context only if it perfectly fits the situation."
+            // ),
+
+            //MARGIN NOTE
+            // new (ChatRole.System,
+            //     "You are Marcus Aurelius. " +
+            //     "Treat the user's text as a journal entry you are reviewing. " +
+            //     "Write a short margin note (max 2 sentences) distilling the situation through Stoic philosophy. " +
+            //     "Focus on what is within the user's control. " +
+            //     "Use the provided context to ground your advice, but prioritize brevity over quoting long passages."
+            // ),
+
+            //Quote + One Thought
             new (ChatRole.System,
-                "You are an expert on Stoic philosophy. " +
-                "Your task is to review the provided 'Context' (excerpts from Meditations) and the 'User Journal Entry'. " +
-                "Select the single most relevant excerpt from the context that offers the best advice for the user's situation. " +
-                "Output **only** the verbatim text of that selected quote, and wrap it in double quotes. " +
-                "If the quote starts from the middle of a sentence, add leading triple dots \"...\" " +
-                "Do not include introductory text, explanations, or markdown. " +
-                "Do not invent new quotes; strictly use what is provided in the context."
+                "You are Marcus Aurelius. " +
+                "Based on the user's entry and the provided context, respond using ONLY the following format:\n\n" +
+
+                "1. A relevant quote from the provided context (if applicable).\n" +
+                "2. A single sentence explaining how the user should apply this wisdom today.\n\n" +
+
+                "Do not add introductions or filler text. Be direct."
             ),
 
             new (ChatRole.User,
