@@ -12,7 +12,11 @@ function App() {
   const { entries, loading, error, submitEntry, deleteEntry } = useJournal();
 
   const [activeTab, setActiveTab] = useState<"journal" | "history">("journal");
-  const [responseOverlay, setResponseOverlay] = useState<{response: JournalResponse | null, visible: boolean, fading: boolean}>({response: null, visible: false, fading: false});
+  const [responseOverlay, setResponseOverlay] = useState<{
+    response: JournalResponse | null;
+    visible: boolean;
+    fading: boolean;
+  }>({ response: null, visible: false, fading: false });
 
   if (isAuthLoading) {
     return (
@@ -46,7 +50,7 @@ function App() {
         <p className="text-stoic-charcoal font-light text-lg">
           Dialogue with Marcus Aurelius
         </p>
-        <div >
+        <div>
           <LogoutButton />
         </div>
       </header>
@@ -85,20 +89,32 @@ function App() {
               error={error}
               //callback function as prop
               //When this function is called with a parameter 'res', it checks if res exists, and then set the reponse overlay state
-              onResponse={(res) => { if (res) setResponseOverlay({response: res, visible: true, fading: false}); }}
+              onResponse={(res) => {
+                if (res)
+                  setResponseOverlay({
+                    response: res,
+                    visible: true,
+                    fading: false,
+                  });
+              }}
             />
           ) : (
-            <HistoryFeed 
-              entries={entries} 
-              deleteEntry = {deleteEntry} 
-              loading = {loading}/>
+            <HistoryFeed
+              entries={entries}
+              deleteEntry={deleteEntry}
+              loading={loading}
+            />
           )}
         </div>
       </main>
 
       {/* Response Overlay */}
       {((loading && activeTab === "journal") || responseOverlay.visible) && (
-        <div className={`fixed inset-0 bg-black/90 flex items-center justify-center z-50 transition-opacity duration-500 ${responseOverlay.fading ? 'opacity-0' : 'opacity-100'}`}>
+        <div
+          className={`fixed inset-0 bg-black/90 flex items-center justify-center z-50 transition-opacity duration-500 ${
+            responseOverlay.fading ? "opacity-0" : "opacity-100"
+          }`}
+        >
           <div className=" w-[70%] ">
             {loading ? (
               <div className="text-center">
@@ -117,8 +133,16 @@ function App() {
                 <button
                   onClick={() => {
                     //Fade out effect
-                    setResponseOverlay(prev => ({ ...prev, fading: true }));
-                    setTimeout(() => setResponseOverlay({response: null, visible: false, fading: false}), 500);
+                    setResponseOverlay((prev) => ({ ...prev, fading: true }));
+                    setTimeout(
+                      () =>
+                        setResponseOverlay({
+                          response: null,
+                          visible: false,
+                          fading: false,
+                        }),
+                      500
+                    );
                   }}
                   className="mt-4 px-4 py-2 text-stoic-paper rounded hover:bg-stoic-charcoal"
                 >

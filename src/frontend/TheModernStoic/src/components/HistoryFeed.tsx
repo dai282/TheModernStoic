@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { JournalEntry } from "../types/journal";
 
 interface HistoryFeedProps {
@@ -7,6 +8,21 @@ interface HistoryFeedProps {
 }
 
 function HistoryFeed({ entries, deleteEntry, loading }: HistoryFeedProps) {
+  const [deletingEntries, setDeletingEntries] = useState<Set<string>>(new Set());
+
+  const handleDelete = async (entryId: string) => {
+    setDeletingEntries(prev => new Set(prev).add(entryId));
+    try {
+      await deleteEntry(entryId);
+    } finally {
+      //after deleting, clean the set
+      setDeletingEntries(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(entryId);
+        return newSet;
+      });
+    }
+  };
   if (entries.length === 0) {
     return (
       <div className="text-center text-stoic-charcoal italic mt-10">
@@ -32,12 +48,12 @@ function HistoryFeed({ entries, deleteEntry, loading }: HistoryFeedProps) {
 
           <div className="mt-4 flex justify-between items-center">
             <button
-              disabled={loading}
-              onClick={() => deleteEntry(entry.id)}
-              className="bg-stoic-accent text-stoic-paper px-3 py-1 rounded text-sm font-medium 
+              disabled={deletingEntries.has(entry.id)}
+              onClick={() => handleDelete(entry.id)}
+              className="bg-stoic-accent text-stoic-paper px-3 py-1 rounded text-sm font-medium
                       hover:bg-stoic-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Deleting..." : "Delete"}
+              {deletingEntries.has(entry.id) ? "Deleting..." : "Delete"}
             </button>
             {/* Meta */}
             <span className="text-xs text-stoic-sand uppercase tracking-wider font-sans">

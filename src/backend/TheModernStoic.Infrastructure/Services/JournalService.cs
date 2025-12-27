@@ -69,7 +69,7 @@ public class JournalService : IJournalService
                 "You are an expert on Stoic philosophy. " +
                 "Your task is to review the provided 'Context' (excerpts from Meditations) and the 'User Journal Entry'. " +
                 "Select the single most relevant excerpt from the context that offers the best advice for the user's situation. " +
-                "Output **only** the verbatim text of that selected quote. " +
+                "Output **only** the verbatim text of that selected quote, and wrap it in double quotes. " +
                 "If the quote starts from the middle of a sentence, add leading triple dots \"...\" " +
                 "Do not include introductory text, explanations, or markdown. " +
                 "Do not invent new quotes; strictly use what is provided in the context."
