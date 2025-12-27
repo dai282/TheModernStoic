@@ -102,7 +102,6 @@ function App() {
             <HistoryFeed
               entries={entries}
               deleteEntry={deleteEntry}
-              loading={loading}
             />
           )}
         </div>

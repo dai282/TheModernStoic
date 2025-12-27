@@ -4,10 +4,9 @@ import type { JournalEntry } from "../types/journal";
 interface HistoryFeedProps {
   entries: JournalEntry[];
   deleteEntry: (entryId: string) => Promise<void>;
-  loading: boolean;
 }
 
-function HistoryFeed({ entries, deleteEntry, loading }: HistoryFeedProps) {
+function HistoryFeed({ entries, deleteEntry }: HistoryFeedProps) {
   const [deletingEntries, setDeletingEntries] = useState<Set<string>>(new Set());
 
   const handleDelete = async (entryId: string) => {
