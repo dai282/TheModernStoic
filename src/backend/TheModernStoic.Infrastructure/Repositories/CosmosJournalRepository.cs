@@ -36,4 +36,9 @@ public class CosmosJournalRepository : IJournalRepository
         return results;
     }
 
+    public async Task DeleteEntryAsync(string userId, string entryId)
+    {
+        await _container.DeleteItemAsync<JournalEntry>(entryId, new PartitionKey(userId));
+    }
+
 }

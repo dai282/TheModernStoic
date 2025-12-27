@@ -44,5 +44,9 @@ export const useStoicApi = () => {
     return response.data;
   };
 
-  return {submitUserEntry, getHistory};
+  const deleteUserEntry = async (entryId: string): Promise<void> =>{
+    await client.delete<void>(`/journal/${entryId}`);
+  }
+
+  return {submitUserEntry, getHistory, deleteUserEntry};
 };

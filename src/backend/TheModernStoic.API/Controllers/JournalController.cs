@@ -33,4 +33,11 @@ public class JournalController : ControllerBase
         var history = await _journalService.GetHistoryAsync();
         return Ok(history);
     }
+
+    [HttpDelete("{entryId}")] // DELETE api/journal/{entryId}
+    public async Task<IActionResult> DeleteEntry(string entryId)
+    {
+        await _journalService.DeleteEntryAsync(entryId);
+        return NoContent();
+    }
 }

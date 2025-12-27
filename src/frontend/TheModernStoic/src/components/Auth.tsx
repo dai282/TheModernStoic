@@ -19,7 +19,7 @@ export const LogoutButton = () =>{
     return (
         <button
             onClick={()=> logout()}
-            className="text-xs text-stoic-sand hover:text-stoic-charcoal underline">
+            className="text-sm text-stoic-sand hover:text-stoic-accent underline">
             End Session
         </button>
     );

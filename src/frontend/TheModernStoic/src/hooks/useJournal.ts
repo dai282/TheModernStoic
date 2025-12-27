@@ -10,7 +10,7 @@ export const useJournal = () =>{
 
     const { isAuthenticated } = useAuth0();
 
-    const {submitUserEntry, getHistory} = useStoicApi();
+    const {submitUserEntry, getHistory, deleteUserEntry} = useStoicApi();
 
     /* useCallback accepts as a first parameter a function and returns a memoized version of it 
     (in terms of its memory location, not the computation done inside). 
@@ -56,6 +56,21 @@ export const useJournal = () =>{
         }
     }
 
+    const deleteEntry = async (entryId: string): Promise<void> =>{
+        setLoading(true);
+        setError(null);
+        try{
+            await deleteUserEntry(entryId);
+            //refetch history to update UI after deletion
+            await fetchHistory();
+        }
+        catch(err){
+            setError("Could not delete entry");
+        }finally{
+            setLoading(false);
+        }
+    }
+
     //don't need to fetch history as it's done on mount
-    return {entries, loading, error, submitEntry};
+    return {entries, loading, error, submitEntry, deleteEntry};
 }

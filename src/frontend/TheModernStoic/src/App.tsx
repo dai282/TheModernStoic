@@ -5,12 +5,14 @@ import JournalInputCard from "./components/JournalInputCard";
 import HistoryFeed from "./components/HistoryFeed";
 import { useAuth0 } from "@auth0/auth0-react";
 import { LoginButton, LogoutButton } from "./components/Auth";
+import type { JournalResponse } from "./types/journal";
 
 function App() {
   const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth0();
-  const { entries, loading, error, submitEntry } = useJournal();
+  const { entries, loading, error, submitEntry, deleteEntry } = useJournal();
 
   const [activeTab, setActiveTab] = useState<"journal" | "history">("journal");
+  const [responseOverlay, setResponseOverlay] = useState<{response: JournalResponse | null, visible: boolean, fading: boolean}>({response: null, visible: false, fading: false});
 
   if (isAuthLoading) {
     return (
@@ -81,12 +83,52 @@ function App() {
               onSubmit={submitEntry}
               loading={loading}
               error={error}
+              //callback function as prop
+              //When this function is called with a parameter 'res', it checks if res exists, and then set the reponse overlay state
+              onResponse={(res) => { if (res) setResponseOverlay({response: res, visible: true, fading: false}); }}
             />
           ) : (
-            <HistoryFeed entries={entries} />
+            <HistoryFeed 
+              entries={entries} 
+              deleteEntry = {deleteEntry} 
+              loading = {loading}/>
           )}
         </div>
       </main>
+
+      {/* Response Overlay */}
+      {((loading && activeTab === "journal") || responseOverlay.visible) && (
+        <div className={`fixed inset-0 bg-black/90 flex items-center justify-center z-50 transition-opacity duration-500 ${responseOverlay.fading ? 'opacity-0' : 'opacity-100'}`}>
+          <div className=" w-[70%] ">
+            {loading ? (
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-stoic-paper mx-auto mb-4"></div>
+                <p className="text-stoic-paper font-serif">
+                  The Stoic is contemplating...
+                </p>
+              </div>
+            ) : (
+              <div className="text-center">
+                <div className="mb-4 animate-fade-in">
+                  <p className="text-stoic-paper font-serif text-lg leading-relaxed italic">
+                    {responseOverlay.response?.stoicAdvice}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    //Fade out effect
+                    setResponseOverlay(prev => ({ ...prev, fading: true }));
+                    setTimeout(() => setResponseOverlay({response: null, visible: false, fading: false}), 500);
+                  }}
+                  className="mt-4 px-4 py-2 text-stoic-paper rounded hover:bg-stoic-charcoal"
+                >
+                  Close
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <footer className="mt-20 text-stoic-sand text-xs font-sans text-center">
         Memento Mori • {new Date().getFullYear()} • {user?.email}

@@ -7,4 +7,6 @@ public interface IJournalService
     Task<JournalResponseDto> ProcessJournalEntryAsync(string userText);
 
     Task<IEnumerable<JournalEntryDto>> GetHistoryAsync();
+
+    Task DeleteEntryAsync(string entryId);
 }

@@ -5,14 +5,17 @@ interface JournalInputCardProps {
   onSubmit: (text: string) => Promise<JournalResponse | null>;
   loading: boolean;
   error: string | null;
+  onResponse: (response: JournalResponse | null) => void;
 }
 
-function JournalInputCard({ onSubmit, loading, error }: JournalInputCardProps) {
+function JournalInputCard({ onSubmit, loading, error, onResponse }: JournalInputCardProps) {
   const [input, setInput] = useState("");
 
   const handleReflect = async () => {
     if (!input) return;
-    await onSubmit(input);
+    const journalResponse = await onSubmit(input);
+    //callbackfunction, effectively "passing" JournalResponse to App.tsx
+    onResponse(journalResponse);
     setInput("");
   };
 
@@ -51,7 +54,6 @@ function JournalInputCard({ onSubmit, loading, error }: JournalInputCardProps) {
           {error}
         </div>
       )}
-
     </div>
   );
 }

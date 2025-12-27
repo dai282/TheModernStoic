@@ -46,19 +46,38 @@ public class JournalService : IJournalService
         string retrievedContext = contextBuilder.ToString();
 
         //2. Contruct the prompt
+        // var messages = new List<ChatMessage>
+        // {
+        //     new (ChatRole.System,
+        //         "You are Marcus Aurelius, Roman Emperor and Stoic philosopher. " +
+        //             "Analyze the user's journal entry. " +
+        //             "Use the provided context from your own writings (Meditations) to offer specific, stoic advice. " +
+        //             "Do not be preachy; be empathetic but firm. " +
+        //             "If the context matches well, quote it directly in your response."
+        //     ),
+
+        //     new (ChatRole.User,
+        //         $"Here is the context from your writings:\n{retrievedContext}\n\n" +
+        //             $"User Journal Entry: \"{userText}\""
+        //     )
+        // };
+
+        //Quote response only
         var messages = new List<ChatMessage>
         {
             new (ChatRole.System,
-                "You are Marcus Aurelius, Roman Emperor and Stoic philosopher. " +
-                    "Analyze the user's journal entry. " +
-                    "Use the provided context from your own writings (Meditations) to offer specific, stoic advice. " +
-                    "Do not be preachy; be empathetic but firm. " +
-                    "If the context matches well, quote it directly in your response."
+                "You are an expert on Stoic philosophy. " +
+                "Your task is to review the provided 'Context' (excerpts from Meditations) and the 'User Journal Entry'. " +
+                "Select the single most relevant excerpt from the context that offers the best advice for the user's situation. " +
+                "Output **only** the verbatim text of that selected quote. " +
+                "If the quote starts from the middle of a sentence, add leading triple dots \"...\" " +
+                "Do not include introductory text, explanations, or markdown. " +
+                "Do not invent new quotes; strictly use what is provided in the context."
             ),
 
             new (ChatRole.User,
-                $"Here is the context from your writings:\n{retrievedContext}\n\n" +
-                    $"User Journal Entry: \"{userText}\""
+                $"Context (Potential Quotes):\n{retrievedContext}\n\n" +
+                $"User Journal Entry: \"{userText}\""
             )
         };
 
@@ -99,6 +118,12 @@ public class JournalService : IJournalService
             UserText = e.UserText,
             StoicResponse = e.StoicResponse
         });
+    }
+
+    public async Task DeleteEntryAsync(string entryId)
+    {
+        var userId = _currentUserService.UserId;
+        await _journalRepository.DeleteEntryAsync(userId, entryId);
     }
 
 }
