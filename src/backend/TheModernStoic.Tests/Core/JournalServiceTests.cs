@@ -101,7 +101,7 @@ namespace TheModernStoic.Tests.Core
                 Arg.Is<JournalEntry>(entry =>
                     entry.UserText == userText &&
                     entry.StoicResponse == "Saved." &&
-                    entry.UserId == "guest-user" // Checking the hardcoded ID logic
+                    entry.UserId == _currentUserServiceMock.UserId
                 )
             );
         }
