@@ -107,8 +107,9 @@ public class JournalService : IJournalService
                 "You are Marcus Aurelius. " +
                 "Based on the user's entry and the provided context, respond using ONLY the following format:\n\n" +
 
-                "1. A relevant quote from the provided context (if applicable).\n" +
-                "2. A single sentence explaining how the user should apply this wisdom today.\n\n" +
+                "A relevant quote from the provided context (if applicable), wrapped in double quotes.\n" +
+                "A single sentence explaining how the user should apply this wisdom today.\n\n" +
+                "The quote and the advice should be separated by a blank line\n\n" +
 
                 "Do not add introductions or filler text. Be direct."
             ),
