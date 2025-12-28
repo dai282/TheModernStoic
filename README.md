@@ -14,8 +14,16 @@
 
 The AI Agent (acting as Marcus Aurelius) synthesizes your specific situation with these ancient quotes to provide actionable, philosophical advice.
 
-### 🎥 Demo
-*To Be Included*
+## 🎥 Demo
+
+### Login & Authentication
+![2025-12-2817-21-53-ezgif com-crop](https://github.com/user-attachments/assets/2ea2d6e9-2f2c-4b8c-a6f4-d83069f3ba0d)
+
+### Adding Journal Entries
+![2025-12-2817-21-53-ezgif com-crop(1)](https://github.com/user-attachments/assets/de952b2c-d865-4ada-8b88-ca462d76d32a)
+
+### Viewing History and Deleting Entries
+![2025-12-2818-02-11-ezgif com-crop](https://github.com/user-attachments/assets/72b3b063-ea6b-4d02-ae80-17fbebe4eb34)
 
 ---
 
@@ -29,7 +37,7 @@ This project was built to explore **Azure Cloud-Native** development and **Clean
 - **AI Orchestration:** Microsoft Semantic Kernel (Microsoft.Extensions.AI).
 - **Embedding Strategy (Cost Optimization):** Uses `all-MiniLM-L6-v2` running **locally** via ONNX Runtime. This eliminates the latency and cost of calling external embedding APIs (like OpenAI Ada).
 - **Chat Generation:** Hugging Face Inference API (Llama-3.1-8B-Instruct).
-- **Testing:** xUnit & Moq.
+- **Testing:** xUnit & NSubstitute.
 
 ### Frontend
 - **Framework:** React + TypeScript + Vite.
@@ -87,7 +95,7 @@ This project was built to explore **Azure Cloud-Native** development and **Clean
 
 ## 💡 Learning Outcomes
 
-Coming from an AWS/Vercel background, this project was my deep dive into the **Microsoft/Azure ecosystem**:
+This project was my deep dive into the **Microsoft/Azure ecosystem**:
 *   **Cloud Agnosticism:** Translating infrastructure concepts from AWS ECS to **Azure Container Apps**.
 *   **Vector Databases:** Implementing Vector Search in a NoSQL environment (Cosmos DB).
 *   **AI Abstractions:** Learning **Semantic Kernel** to standardize AI integration.
