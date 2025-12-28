@@ -110,6 +110,7 @@ public class JournalService : IJournalService
                 "A relevant quote from the provided context (if applicable), wrapped in double quotes.\n" +
                 "A single sentence explaining how the user should apply this wisdom today.\n\n" +
                 "The quote and the advice should be separated by a blank line\n\n" +
+                "There should only be 1 quote and 1 advice maximum\n\n" +
 
                 "Do not add introductions or filler text. Be direct."
             ),
