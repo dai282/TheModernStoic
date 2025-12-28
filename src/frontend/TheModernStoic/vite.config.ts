@@ -11,5 +11,8 @@ export default defineConfig({
     environment: 'jsdom', // Simulates browser
     setupFiles: './src/test/setup.ts', // Bootstrapping
     css: true, // Process CSS (useful if you test class names/Tailwind)
+    env:{
+      TZ: 'UTC',
+    }
   },
 })

@@ -39,7 +39,7 @@ describe("HistoryFeed Component", () => {
 
     // Check dates are formatted
     expect(screen.getByText("12/1/2023")).toBeInTheDocument();
-    expect(screen.getByText("12/3/2023")).toBeInTheDocument();
+    expect(screen.getByText("12/2/2023")).toBeInTheDocument();
   });
 
   it("renders delete buttons for each entry", () => {
