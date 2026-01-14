@@ -2,12 +2,9 @@
 param location string
 param environmentName string
 param appName string
-param acrLoginServer string
-param acrName string
+param dockerHubUsername string
 @secure()
 param cosmosConnectionString string
-@secure()
-param acrPassword string // We need to add this to main.bicep later!
 @secure()
 param huggingFaceApiKey string
 param imageTag string
@@ -44,22 +41,8 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
         targetPort: 8080
         transport: 'auto'
       }
-      // REGISTRIES: How to log in to ACR
-      registries: [
-        {
-          server: acrLoginServer
-          username: acrName
-          //The passwordSecretRef field expects a string reference to a secret defined in the secrets array. 
-          //It should match the name property of one of your secrets:
-          passwordSecretRef: 'acr-password' //not the actual value: acrPassword
-        }
-      ]
       // SECRETS: Safe storage for sensitive strings
       secrets: [
-        {
-          name: 'acr-password'
-          value: acrPassword
-        }
         {
           name: 'cosmos-connection-string'
           value: cosmosConnectionString
@@ -83,12 +66,8 @@ resource app 'Microsoft.App/containerApps@2025-07-01' = {
       containers: [
         {
           name: 'main-app'
-          // STARTER STRATEGY: Use a public Hello World image initially.
-          // Your CI/CD pipeline will overwrite this with your real ACR image later.
-          //image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
-
-          // Update the image reference to use the param
-          image: '${acrLoginServer}/modern-stoic-app:${imageTag}'
+          // Image from Docker Hub
+          image: '${dockerHubUsername}/modern-stoic-app:${imageTag}'
 
           // RESOURCE ALLOCATION:
           // Since you are running ONNX locally, we need more juice than the minimum.

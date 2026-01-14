@@ -12,7 +12,7 @@ permissions:
 
 env:
   AZURE_RESOURCE_GROUP: rg-modern-stoic-dev-ind # Update matches your Bicep
-  ACR_NAME: acrmodernstoicdevzu3qc # Update matches your actual ACR name
+  DOCKERHUB_USERNAME: dai282
   BACKEND_IMAGE_NAME: modern-stoic-app
 
 jobs:
@@ -30,9 +30,9 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # 2. Login to ACR so Docker can push
-      - name: Login to ACR
-        run: az acr login --name ${{ env.ACR_NAME }}
+      # 2. Login to Docker Hub so Docker can push
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ env.DOCKERHUB_USERNAME }} --password-stdin
 
       # 3. Build and Push Docker Image
       # We use the Git SHA as the unique tag for versioning
@@ -42,7 +42,7 @@ jobs:
           context: ./src/backend
           file: ./src/backend/TheModernStoic.API/Dockerfile
           push: true
-          tags: ${{ env.ACR_NAME }}.azurecr.io/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
+          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
 
         # 4. Deploy Infrastructure (Bicep)
       # We pass the github.sha as the imageTag param to Bicep
@@ -52,5 +52,5 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
           template: ./infrastructure/bicep/main.bicep
-          parameters: imageTag=${{ github.sha }} huggingFaceApiKey=${{ secrets.HUGGINGFACE_API_KEY }} auth0Domain=${{ secrets.AUTH0_DOMAIN }} auth0Audience=${{ secrets.AUTH0_AUDIENCE }}
+          parameters: imageTag=${{ github.sha }} dockerHubUsername=${{ env.DOCKERHUB_USERNAME }} huggingFaceApiKey=${{ secrets.HUGGINGFACE_API_KEY }} auth0Domain=${{ secrets.AUTH0_DOMAIN }} auth0Audience=${{ secrets.AUTH0_AUDIENCE }}
           failOnStdErr: false
