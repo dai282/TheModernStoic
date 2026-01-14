@@ -82,11 +82,27 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:5173",
-         "https://blue-ocean-065454300.6.azurestaticapps.net",
-         "https://blue-ocean-065454300-5.eastasia.6.azurestaticapps.net/") //preview environment test
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.SetIsOriginAllowed(origin =>
+        {
+            // 1. Allow Localhost
+            if (origin == "http://localhost:5173") return true;
+
+            // 2. Allow Production (Exact Match)
+            if (origin == "https://blue-ocean-065454300.6.azurestaticapps.net") return true;
+
+            // 3. Allow Preview Environments (Dynamic Pattern)
+            // Checks if it starts with your app name and ends with the azure domain
+            // This covers -1, -2, -5, -6, etc.
+            if (origin.StartsWith("https://blue-ocean-065454300-") &&
+                origin.EndsWith(".azurestaticapps.net"))
+            {
+                return true;
+            }
+
+            return false;
+        })
+        .AllowAnyHeader()
+        .AllowAnyMethod();
     });
 });
 
