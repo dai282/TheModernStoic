@@ -1,35 +1,42 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import userEvent from '@testing-library/user-event';
+import userEvent from "@testing-library/user-event";
 import App from "./App";
 import type { JournalEntry, JournalResponse } from "./types/journal";
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0 } from "@auth0/auth0-react";
 import { useJournal } from "./hooks/useJournal";
 
 // Mock the hooks
-vi.mock('./hooks/useJournal', () => ({
-  useJournal: vi.fn()
+vi.mock("./hooks/useJournal", () => ({
+  useJournal: vi.fn(),
 }));
 
-vi.mock('@auth0/auth0-react', () => ({
+vi.mock("@auth0/auth0-react", () => ({
   useAuth0: vi.fn(),
   LoginButton: () => <button>Login</button>,
-  LogoutButton: () => <button>Logout</button>
+  LogoutButton: () => <button>Logout</button>,
 }));
 
 // Mock the components
-vi.mock('./components/JournalInputCard', () => ({
+vi.mock("./components/JournalInputCard", () => ({
   default: ({ onSubmit, onResponse }: any) => (
     <div data-testid="journal-input-card">
       <textarea data-testid="journal-textarea" />
-      <button data-testid="journal-submit" onClick={() => onSubmit('test').then((res: JournalResponse | null) => onResponse(res))}>
+      <button
+        data-testid="journal-submit"
+        onClick={() =>
+          onSubmit("test").then((res: JournalResponse | null) =>
+            onResponse(res)
+          )
+        }
+      >
         Reflect
       </button>
     </div>
-  )
+  ),
 }));
 
-vi.mock('./components/HistoryFeed', () => ({
+vi.mock("./components/HistoryFeed", () => ({
   default: ({ entries }: any) => (
     <div data-testid="history-feed">
       {entries.map((entry: JournalEntry) => (
@@ -38,7 +45,7 @@ vi.mock('./components/HistoryFeed', () => ({
         </div>
       ))}
     </div>
-  )
+  ),
 }));
 
 describe("App Component", () => {
@@ -56,7 +63,7 @@ describe("App Component", () => {
         isLoading: true,
         user: undefined,
         loginWithRedirect: vi.fn(),
-        logout: vi.fn()
+        logout: vi.fn(),
       } as any);
 
       // Mock useJournal even though it won't be used
@@ -65,7 +72,7 @@ describe("App Component", () => {
         loading: false,
         error: null,
         submitEntry: vi.fn(),
-        deleteEntry: vi.fn()
+        deleteEntry: vi.fn(),
       });
 
       render(<App />);
@@ -82,7 +89,7 @@ describe("App Component", () => {
         isLoading: false,
         user: undefined,
         loginWithRedirect: vi.fn(),
-        logout: vi.fn()
+        logout: vi.fn(),
       } as any);
 
       // Mock useJournal even though it won't be used
@@ -91,13 +98,17 @@ describe("App Component", () => {
         loading: false,
         error: null,
         submitEntry: vi.fn(),
-        deleteEntry: vi.fn()
+        deleteEntry: vi.fn(),
       });
 
       render(<App />);
 
       expect(screen.getByText("The Modern Stoic")).toBeInTheDocument();
-      expect(screen.getByText('"The soul becomes dyed with the color of its thoughts."')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          '"The soul becomes dyed with the color of its thoughts."'
+        )
+      ).toBeInTheDocument();
     });
 
     it("shows main app when authenticated", () => {
@@ -107,9 +118,9 @@ describe("App Component", () => {
       mockUseAuth0.mockReturnValue({
         isAuthenticated: true,
         isLoading: false,
-        user: { email: 'test@example.com' },
+        user: { email: "test@example.com" },
         loginWithRedirect: vi.fn(),
-        logout: vi.fn()
+        logout: vi.fn(),
       } as any);
 
       mockUseJournal.mockReturnValue({
@@ -117,14 +128,20 @@ describe("App Component", () => {
         loading: false,
         error: null,
         submitEntry: vi.fn(),
-        deleteEntry: vi.fn()
+        deleteEntry: vi.fn(),
       });
 
       render(<App />);
 
       expect(screen.getByText("The Modern Stoic")).toBeInTheDocument();
-      expect(screen.getByText("Dialogue with Marcus Aurelius")).toBeInTheDocument();
-      expect(screen.getByText("Memento Mori • 2025 • test@example.com")).toBeInTheDocument();
+      expect(
+        screen.getByText("Dialogue with Marcus Aurelius")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          `Memento Mori • ${new Date().getFullYear()} • test@example.com`
+        )
+      ).toBeInTheDocument();
     });
   });
 
@@ -136,9 +153,9 @@ describe("App Component", () => {
       mockUseAuth0.mockReturnValue({
         isAuthenticated: true,
         isLoading: false,
-        user: { email: 'test@example.com' },
+        user: { email: "test@example.com" },
         loginWithRedirect: vi.fn(),
-        logout: vi.fn()
+        logout: vi.fn(),
       } as any);
 
       mockUseJournal.mockReturnValue({
@@ -146,7 +163,7 @@ describe("App Component", () => {
         loading: false,
         error: null,
         submitEntry: vi.fn(),
-        deleteEntry: vi.fn()
+        deleteEntry: vi.fn(),
       });
     });
 
@@ -165,7 +182,9 @@ describe("App Component", () => {
       await user.click(historyTab);
 
       expect(screen.getByTestId("history-feed")).toBeInTheDocument();
-      expect(screen.queryByTestId("journal-input-card")).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("journal-input-card")
+      ).not.toBeInTheDocument();
     });
 
     it("switches back to JournalInputCard when Journal tab is clicked", async () => {
@@ -189,15 +208,23 @@ describe("App Component", () => {
       render(<App />);
 
       // Journal tab should be active by default
-      expect(screen.getByText("Journal").closest('button')).toHaveClass('border-stoic-accent', 'text-stoic-accent');
+      expect(screen.getByText("Journal").closest("button")).toHaveClass(
+        "border-stoic-accent",
+        "text-stoic-accent"
+      );
 
       // Click History tab
       const historyTab = screen.getByText("History");
       await user.click(historyTab);
 
       // History tab should now be active
-      expect(historyTab.closest('button')).toHaveClass('border-stoic-accent', 'text-stoic-accent');
-      expect(screen.getByText("Journal").closest('button')).not.toHaveClass('border-stoic-accent');
+      expect(historyTab.closest("button")).toHaveClass(
+        "border-stoic-accent",
+        "text-stoic-accent"
+      );
+      expect(screen.getByText("Journal").closest("button")).not.toHaveClass(
+        "border-stoic-accent"
+      );
     });
   });
 
@@ -209,9 +236,9 @@ describe("App Component", () => {
       mockUseAuth0.mockReturnValue({
         isAuthenticated: true,
         isLoading: false,
-        user: { email: 'test@example.com' },
+        user: { email: "test@example.com" },
         loginWithRedirect: vi.fn(),
-        logout: vi.fn()
+        logout: vi.fn(),
       } as any);
     });
 
@@ -221,19 +248,21 @@ describe("App Component", () => {
         loading: true,
         error: null,
         submitEntry: vi.fn(),
-        deleteEntry: vi.fn()
+        deleteEntry: vi.fn(),
       });
 
       render(<App />);
 
-      expect(screen.getByText("The Stoic is contemplating...")).toBeInTheDocument();
+      expect(
+        screen.getByText("The Stoic is contemplating...")
+      ).toBeInTheDocument();
     });
 
     it("shows response overlay after successful submission", async () => {
       const mockSubmitEntry = vi.fn().mockResolvedValue({
         userText: "Test",
         stoicAdvice: "Test advice",
-        citedQuotes: []
+        citedQuotes: [],
       });
 
       mockUseJournal.mockReturnValue({
@@ -241,7 +270,7 @@ describe("App Component", () => {
         loading: false,
         error: null,
         submitEntry: mockSubmitEntry,
-        deleteEntry: vi.fn()
+        deleteEntry: vi.fn(),
       });
 
       const user = userEvent.setup();
@@ -258,7 +287,7 @@ describe("App Component", () => {
       const mockSubmitEntry = vi.fn().mockResolvedValue({
         userText: "Test",
         stoicAdvice: "Test advice",
-        citedQuotes: []
+        citedQuotes: [],
       });
 
       mockUseJournal.mockReturnValue({
@@ -266,7 +295,7 @@ describe("App Component", () => {
         loading: false,
         error: null,
         submitEntry: mockSubmitEntry,
-        deleteEntry: vi.fn()
+        deleteEntry: vi.fn(),
       });
 
       const user = userEvent.setup();
@@ -281,9 +310,12 @@ describe("App Component", () => {
       await user.click(closeButton);
 
       // Wait for the fade out animation to complete (500ms timeout in App.tsx)
-      await vi.waitFor(() => {
-        expect(screen.queryByText("Test advice")).not.toBeInTheDocument();
-      }, { timeout: 600 });
+      await vi.waitFor(
+        () => {
+          expect(screen.queryByText("Test advice")).not.toBeInTheDocument();
+        },
+        { timeout: 600 }
+      );
     });
   });
 
@@ -296,25 +328,25 @@ describe("App Component", () => {
         id: "1",
         date: "2023-12-01T10:00:00Z",
         userText: "Test entry 1",
-        stoicResponse: "Test response 1"
-      }
+        stoicResponse: "Test response 1",
+      },
     ];
 
     beforeEach(() => {
       mockUseAuth0.mockReturnValue({
         isAuthenticated: true,
         isLoading: false,
-        user: { email: 'test@example.com' },
+        user: { email: "test@example.com" },
         loginWithRedirect: vi.fn(),
-        logout: vi.fn()
-      }  as any);
+        logout: vi.fn(),
+      } as any);
 
       mockUseJournal.mockReturnValue({
         entries: mockEntries,
         loading: false,
         error: null,
         submitEntry: vi.fn(),
-        deleteEntry: vi.fn()
+        deleteEntry: vi.fn(),
       });
     });
 
@@ -337,7 +369,7 @@ describe("App Component", () => {
         loading: false,
         error: null,
         submitEntry: vi.fn(),
-        deleteEntry: mockDeleteEntry
+        deleteEntry: mockDeleteEntry,
       });
 
       const user = userEvent.setup();
