@@ -9,7 +9,7 @@ test("Submit a user entry", async ({ page }) => {
   await page.getByRole("button", { name: "Begin Session" }).click();
 
   //Auth0 prompts for authorization
-  await page.getByRole("button", { name: "Accept" }).click();
+  //await page.getByRole("button", { name: "Accept" }).click();
 
   //Should have already been logged in via setup
 
