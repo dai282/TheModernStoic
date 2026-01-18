@@ -15,12 +15,12 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: "10.0.x"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install Frontend Dependencies
         run: npm install
@@ -30,7 +30,7 @@ jobs:
         run: npm run build
         working-directory: ./src/frontend/TheModernStoic
         env:
-            VITE_API_BASE_URL: http://localhost:5289/api 
+          VITE_API_BASE_URL: http://localhost:5289/api
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -38,10 +38,13 @@ jobs:
 
       - name: Start Backend
         run: dotnet run --project ./src/backend/TheModernStoic.AppHost/TheModernStoic.AppHost.csproj &
-        
+        env:
+          CosmosDb__ConnectionString: "AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
+          AI__HuggingFaceApiKey: "dummy-key"
+
       - name: Start Frontend
         run: npx serve -s ./src/frontend/TheModernStoic/dist -l 3000 &
-        
+
       - name: Wait for servers
         run: |
           npm install -g wait-on
