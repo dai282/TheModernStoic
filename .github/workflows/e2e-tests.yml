@@ -39,34 +39,21 @@ jobs:
         run: npx playwright install --with-deps
         working-directory: ./src/frontend/TheModernStoic
 
-      - name: Start Cosmos DB Emulator
-        run: |
-          docker run -p 8081:8081 -p 10251:10251 -p 10252:10252 -p 10253:10253 -p 10254:10254 --name cosmosdb-emulator -d mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest
-          npm install -g wait-on
-          wait-on https://localhost:8081/_explorer/emulator.html --strict-ssl=false --timeout 600000 # 10 minutes timeout
-
       - name: Start Backend
         run: dotnet run --project ./src/backend/TheModernStoic.API/TheModernStoic.API.csproj --urls "http://localhost:5289" &
         env:
-          CosmosDb__ConnectionString: "AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;DisableRequestedTimeout=true;"
+          UseInMemoryDb: "true"
           AI__HuggingFaceApiKey: ${{ secrets.HUGGINGFACE_API_KEY }}
-          # ASPNETCORE_URLS is set via the --urls argument
           ASPNETCORE_ENVIRONMENT: "Development"
-
-      - name: Trust Cosmos DB Emulator Certificate
-        run: |
-          # 1. Download the cert from the running container
-          curl -k https://localhost:8081/_explorer/emulator.pem > ~/emulator.pem
-          # 2. Copy it to the trusted store
-          sudo cp ~/emulator.pem /usr/local/share/ca-certificates/
-          # 3. Update the OS trust store
-          sudo update-ca-certificates
+          Auth0__Domain: "dev-zq7ygird458y8v5h.us.auth0.com"
+          Auth0__Audience: "https://themodernstoic-api"
 
       - name: Start Frontend
         run: npx serve -s ./src/frontend/TheModernStoic/dist -l 5173 &
 
       - name: Wait for servers
         run: |
+        
           npm install -g wait-on
           npx wait-on -v -t 60000 http://localhost:5289/health http://localhost:5173
 

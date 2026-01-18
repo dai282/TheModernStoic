@@ -47,29 +47,43 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder.AddServiceDefaults();
 
-builder.Services.AddSingleton<CosmosClient>(sp =>
+// ================== DATABASE & SEARCH SERVICES (Conditional) ==================
+var useInMemoryDb = builder.Configuration.GetValue<bool>("UseInMemoryDb");
+
+if (useInMemoryDb)
 {
-    //var connString = builder.Configuration["CosmosDb:ConnectionString"];
-    var connString = builder.Configuration.GetConnectionString("CosmosDb");
-    if (string.IsNullOrEmpty(connString))
-        throw new InvalidOperationException("CosmosDb:ConnectionString is missing in User Secrets.");
-
-    return new CosmosClient(connString, new CosmosClientOptions
+    // For CI/E2E tests, use lightweight in-memory stores
+    builder.Services.AddSingleton<IJournalRepository, InMemoryJournalRepository>();
+    builder.Services.AddScoped<IVectorSearchService, InMemoryVectorSearchService>();
+}
+else
+{
+    // For local dev and production, use the real Cosmos DB services
+    builder.Services.AddSingleton<CosmosClient>(sp =>
     {
-        // 1. Switch to Gateway mode to bypass Firewall/Port issues
-        ConnectionMode = ConnectionMode.Gateway,
-        // 2. Enable Bulk Execution for performance
-        AllowBulkExecution = true, // Speeds up seeding significantly
-        // 3. Increase Timeout (Default is 60s, bump to 2 mins for cross-region heavy loads)
-        RequestTimeout = TimeSpan.FromMinutes(2),
+        var connString = builder.Configuration.GetConnectionString("CosmosDb");
+        if (string.IsNullOrEmpty(connString))
+            throw new InvalidOperationException("CosmosDb:ConnectionString is missing in User Secrets.");
 
-        // --- NEW: Force camelCase Serialization ---
-        SerializerOptions = new CosmosSerializationOptions
+        return new CosmosClient(connString, new CosmosClientOptions
         {
-            PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
-        }
+            ConnectionMode = ConnectionMode.Gateway,
+            AllowBulkExecution = true,
+            RequestTimeout = TimeSpan.FromMinutes(2),
+            SerializerOptions = new CosmosSerializationOptions
+            {
+                PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
+            }
+        });
     });
-});
+    builder.Services.AddScoped<IVectorSearchService, CosmosVectorSearchService>();
+    builder.Services.AddSingleton<IJournalRepository>(sp =>
+    {
+        var client = sp.GetRequiredService<CosmosClient>();
+        return new CosmosJournalRepository(client, "ModernStoicDb", "Entries");
+    });
+}
+// ==============================================================================
 
 // Register the ONNX Generator using the Extension Method
 builder.Services.AddBertOnnxEmbeddingGenerator(modelPath, vocabPath);
@@ -120,8 +134,15 @@ builder.Services.AddChatClient(new OpenAIClient(
         Endpoint = new Uri($"https://router.huggingface.co/v1/")
     }).GetChatClient(model: hfModelId).AsIChatClient());
 
-// Register the Search Service
-builder.Services.AddScoped<IVectorSearchService, CosmosVectorSearchService>();
+// Register the Journal Service (which depends on the repositories)
+builder.Services.AddScoped<IJournalService, JournalService>();
+
+// Register the new Repository - This is now handled in the conditional block above
+// builder.Services.AddSingleton<IJournalRepository>(sp =>
+// {
+//     var client = sp.GetRequiredService<CosmosClient>();
+//     return new CosmosJournalRepository(client, "ModernStoicDb", "Entries");
+// });
 builder.Services.AddScoped<IJournalService, JournalService>();
 
 // Register the new Repository
