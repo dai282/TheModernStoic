@@ -1,0 +1,70 @@
+name: E2E Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Frontend Dependencies
+        run: npm install
+        working-directory: ./src/frontend/TheModernStoic
+
+      - name: Build Frontend
+        run: npm run build
+        working-directory: ./src/frontend/TheModernStoic
+        env:
+          VITE_API_BASE_URL: http://localhost:5289/api
+          VITE_AUTH0_DOMAIN: "dev-zq7ygird458y8v5h.us.auth0.com"
+          VITE_AUTH0_CLIENT_ID: "M6VSKDC1xXEyQmkY0GP1zlY5SEo6ribd"
+          VITE_AUTH0_AUDIENCE: "https://themodernstoic-api"
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+        working-directory: ./src/frontend/TheModernStoic
+
+      - name: Start Backend
+        run: dotnet run --project ./src/backend/TheModernStoic.API/TheModernStoic.API.csproj --urls "http://localhost:5289" &
+        env:
+          UseInMemoryDb: "true"
+          AI__HuggingFaceApiKey: ${{ secrets.HUGGINGFACE_API_KEY }}
+          ASPNETCORE_ENVIRONMENT: "Development"
+
+      - name: Start Frontend
+        run: npx serve -s ./src/frontend/TheModernStoic/dist -l 5173 &
+
+      - name: Wait for servers
+        run: |
+        
+          npm install -g wait-on
+          npx wait-on -v -t 60000 http://localhost:5289/health http://localhost:5173
+
+      - name: Run Playwright Tests
+        run: npx playwright test
+        working-directory: ./src/frontend/TheModernStoic
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:5173
+
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: src/frontend/TheModernStoic/playwright-report/
+          retention-days: 30
