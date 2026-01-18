@@ -45,8 +45,6 @@ jobs:
           UseInMemoryDb: "true"
           AI__HuggingFaceApiKey: ${{ secrets.HUGGINGFACE_API_KEY }}
           ASPNETCORE_ENVIRONMENT: "Development"
-          Auth0__Domain: "dev-zq7ygird458y8v5h.us.auth0.com"
-          Auth0__Audience: "https://themodernstoic-api"
 
       - name: Start Frontend
         run: npx serve -s ./src/frontend/TheModernStoic/dist -l 5173 &

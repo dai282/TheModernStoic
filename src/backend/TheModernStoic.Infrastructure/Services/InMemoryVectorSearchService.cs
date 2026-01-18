@@ -10,18 +10,9 @@ namespace TheModernStoic.Infrastructure.Services
     {
         public Task<IEnumerable<SearchResult>> SearchAsync(string query, int limit = 3)
         {
-            // For E2E tests, return a single, predictable mock result 
-            // based on the query to make the service's behavior more realistic.
-            var mockResults = new List<SearchResult>
-            {
-                new SearchResult
-                {
-                    Source = "In-Memory Test",
-                    Content = $"A mock stoic quote related to: '{query}'",
-                    Score = 1
-                }
-            };
-            return Task.FromResult(mockResults.AsEnumerable());
+            // For E2E tests, we don't need real search results.
+            // Returning an empty list is sufficient to prevent crashes.
+            return Task.FromResult(Enumerable.Empty<SearchResult>());
         }
     }
 }
