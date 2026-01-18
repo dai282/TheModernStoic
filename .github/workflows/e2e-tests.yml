@@ -41,9 +41,9 @@ jobs:
 
       - name: Start Cosmos DB Emulator
         run: |
-          docker run -p 8081:8081 -p 10251:10251 -p 10252:10252 -p 10253:10253 -p 10254:10254 --name cosmosdb-emulator -d mcr.microsoft.com/azure-cosmos-db/linux/azure-cosmos-emulator:latest
+          docker run -p 8081:8081 -p 10251:10251 -p 10252:10252 -p 10253:10253 -p 10254:10254 --name cosmosdb-emulator -d mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest
           npm install -g wait-on
-          wait-on https://localhost:8081/_explorer/emulator.html --strict-ssl=false --timeout 300000 # 5 minutes timeout
+          wait-on https://localhost:8081/_explorer/emulator.html --strict-ssl=false --timeout 600000 # 10 minutes timeout
 
       - name: Start Backend
         run: dotnet run --project ./src/backend/TheModernStoic.API/TheModernStoic.API.csproj --urls "http://localhost:5289" &
@@ -52,6 +52,15 @@ jobs:
           AI__HuggingFaceApiKey: ${{ secrets.HUGGINGFACE_API_KEY }}
           # ASPNETCORE_URLS is set via the --urls argument
           ASPNETCORE_ENVIRONMENT: "Development"
+
+      - name: Trust Cosmos DB Emulator Certificate
+        run: |
+          # 1. Download the cert from the running container
+          curl -k https://localhost:8081/_explorer/emulator.pem > ~/emulator.pem
+          # 2. Copy it to the trusted store
+          sudo cp ~/emulator.pem /usr/local/share/ca-certificates/
+          # 3. Update the OS trust store
+          sudo update-ca-certificates
 
       - name: Start Frontend
         run: npx serve -s ./src/frontend/TheModernStoic/dist -l 5173 &
