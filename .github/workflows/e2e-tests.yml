@@ -46,18 +46,18 @@ jobs:
           ASPNETCORE_ENVIRONMENT: "Development"
 
       - name: Start Frontend
-        run: npx serve -s ./src/frontend/TheModernStoic/dist -l 3000 &
+        run: npx serve -s ./src/frontend/TheModernStoic/dist -l 5173 &
 
       - name: Wait for servers
         run: |
           npm install -g wait-on
-          npx wait-on -v -t 60000 http://localhost:5289/health http://localhost:3000
+          npx wait-on -v -t 60000 http://localhost:5289/health http://localhost:5173
 
       - name: Run Playwright Tests
         run: npx playwright test
         working-directory: ./src/frontend/TheModernStoic
         env:
-          PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:5173
 
       - name: Upload Playwright Report
         if: always()
